@@ -1,0 +1,30 @@
+{
+  "project_info": {
+    "project_number": "480196824056",
+    "firebase_url": "https://vol-project-2d4b0-default-rtdb.europe-west1.firebasedatabase.app",
+    "project_id": "vol-project-2d4b0",
+    "storage_bucket": "vol-project-2d4b0.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:480196824056:android:47f2067df6fb6daa05640d",
+        "android_client_info": {
+          "package_name": "com.example.locateapet"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAh__KO-3xRRN3RKx4YqP8qmpsYyXs19iU"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
