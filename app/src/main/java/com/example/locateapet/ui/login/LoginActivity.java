@@ -28,11 +28,12 @@ import com.example.locateapet.ui.login.LoginViewModel;
 import com.example.locateapet.ui.login.LoginViewModelFactory;
 import com.example.locateapet.databinding.ActivityLoginBinding;
 
+
 public class LoginActivity extends AppCompatActivity {
 
-    private EditText phone_number;
+    public EditText phone_number;
     Button send_phone;
-    private String phone;
+    public String phone;
 
     @Override
     protected void onCreate(Bundle savedInstance){
@@ -43,7 +44,6 @@ public class LoginActivity extends AppCompatActivity {
         send_phone = findViewById(R.id.login);
 
         send_phone.setOnClickListener(new View.OnClickListener() {
-            @Override
             public void onClick(View v) {
                 Send_data();
             }
@@ -55,10 +55,19 @@ public class LoginActivity extends AppCompatActivity {
     public void Send_data(){
 
         phone = phone_number.getText().toString().trim();
-        Intent i = new Intent(LoginActivity.this, SMS_Conf_Page.class);
 
-        i.putExtra(SMS_Conf_Page.PHONE, phone);
+        if (phone != null){
+            if ((phone.charAt(0) != '+') && (phone.length() != 12)){
+                Toast.makeText(LoginActivity.this, "Invalid phone format", Toast.LENGTH_LONG).show();
+            }else{
+                Intent i = new Intent(LoginActivity.this, SMS_Conf_Page.class);
 
-        startActivity(i);
+                i.putExtra("mobile", phone);
+
+                startActivity(i);
+            }
+        }else{
+            Toast.makeText(LoginActivity.this, "Error", Toast.LENGTH_LONG).show();
+        }
     }
 }
