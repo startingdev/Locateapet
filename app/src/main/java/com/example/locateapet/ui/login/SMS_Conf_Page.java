@@ -1,15 +1,21 @@
 package com.example.locateapet.ui.login;
 
+import static android.content.ContentValues.TAG;
+import static java.security.AccessController.getContext;
+
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.app.Activity;
+import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 
 import com.example.locateapet.MainActivity;
 import com.example.locateapet.R;
+import com.example.locateapet.ui.gallery.GalleryFragment;
 import com.google.android.material.snackbar.Snackbar;
 import com.google.firebase.FirebaseApp;
 import com.google.firebase.auth.FirebaseAuthException;
@@ -27,9 +33,16 @@ import com.google.firebase.FirebaseException;
 import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseAuthInvalidCredentialsException;
+import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.auth.PhoneAuthCredential;
 import com.google.firebase.auth.PhoneAuthOptions;
 import com.google.firebase.auth.PhoneAuthProvider;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
+import com.google.firebase.ktx.Firebase;
 
 import java.util.concurrent.TimeUnit;
 
@@ -39,6 +52,9 @@ public class SMS_Conf_Page extends AppCompatActivity {
     Button send_data;
     EditText editTextCode;
     FirebaseAuth mAuth;
+
+    FirebaseDatabase database;
+    FirebaseUser user;
 
     private String mVerificationId;
 
@@ -124,7 +140,7 @@ public class SMS_Conf_Page extends AppCompatActivity {
         }
 
         @Override
-        public void onCodeSent(String s, PhoneAuthProvider.ForceResendingToken forceResendingToken) {
+        public void onCodeSent(@NonNull String s, @NonNull PhoneAuthProvider.ForceResendingToken forceResendingToken) {
             super.onCodeSent(s, forceResendingToken);
 
             //storing the verification id that is sent to the user
@@ -134,6 +150,8 @@ public class SMS_Conf_Page extends AppCompatActivity {
 
 
     private void verifyVerificationCode(String code) {
+
+        Log.e("catcher", code + " - " + mVerificationId);
         //creating the credential
         PhoneAuthCredential credential = PhoneAuthProvider.getCredential(mVerificationId, code);
 
@@ -147,16 +165,45 @@ public class SMS_Conf_Page extends AppCompatActivity {
                     @Override
                     public void onComplete(@NonNull Task<AuthResult> task) {
                         if (task.isSuccessful()) {
+
+                            database =  FirebaseDatabase.getInstance("https://vol-project-2d4b0-default-rtdb.europe-west1.firebasedatabase.app/");
+                            user = mAuth.getCurrentUser();
+                            String reportId;
+                            reportId = user.getUid();
+                            DatabaseReference mRef =  database.getReference().child("Users").child(reportId);
+                            ValueEventListener eventListener = new ValueEventListener() {
+                                @Override
+                                public void onDataChange(DataSnapshot dataSnapshot) {
+                                    if(!dataSnapshot.exists()) {
+                                        mRef.child("counter_of_uploads").setValue(0);
+                                        mRef.child("phone").setValue(mobile);
+                                    }
+                                }
+
+                                @Override
+                                public void onCancelled(DatabaseError databaseError) {
+                                    Log.d(TAG, databaseError.getMessage()); //Don't ignore errors!
+                                }
+                            };
+                            mRef.addListenerForSingleValueEvent(eventListener);
+
+                            Toast.makeText(SMS_Conf_Page.this, "Successfully signed in!", Toast.LENGTH_LONG).show();
+
                             //verification successful we will start the profile activity
                             Intent intent = new Intent(SMS_Conf_Page.this, MainActivity.class);
-                            intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+
                             startActivity(intent);
+                            /*user = task.getResult().getUser();
+
+
+                            intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+                            startActivity(intent);*/
 
                         } else {
 
                             //verification unsuccessful.. display an error message
 
-                            String message = "Somthing is wrong, we will fix it soon...";
+                            String message = "Something is wrong, we will fix it soon...";
 
                             if (task.getException() instanceof FirebaseAuthInvalidCredentialsException) {
                                 message = "Invalid code entered...";

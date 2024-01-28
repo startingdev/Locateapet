@@ -22,4 +22,12 @@
     <string name="login_hint_code">Enter your sms code here</string>
     <string name="login_send_code">Send</string>
     <string name="prompt_email">Placeholder</string>
+
+    <string-array name="species_list">
+        <item>Кот/кошка</item>
+        <item>Собака</item>
+        <item>Грызуны</item>
+        <item>Птицы</item>
+        <item>Другое</item>
+    </string-array>
 </resources>

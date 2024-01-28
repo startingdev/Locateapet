@@ -2,6 +2,7 @@ package com.example.locateapet.ui.login;
 
 import android.app.Activity;
 
+import androidx.annotation.NonNull;
 import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProvider;
 
@@ -23,10 +24,13 @@ import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.example.locateapet.MainActivity;
 import com.example.locateapet.R;
 import com.example.locateapet.ui.login.LoginViewModel;
 import com.example.locateapet.ui.login.LoginViewModelFactory;
 import com.example.locateapet.databinding.ActivityLoginBinding;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
 
 
 public class LoginActivity extends AppCompatActivity {
@@ -34,6 +38,21 @@ public class LoginActivity extends AppCompatActivity {
     public EditText phone_number;
     Button send_phone;
     public String phone;
+
+    FirebaseAuth mAuth = mAuth = FirebaseAuth.getInstance();
+
+    FirebaseAuth.AuthStateListener authStateListener = new FirebaseAuth.AuthStateListener() {
+        @Override
+        public void onAuthStateChanged(@NonNull FirebaseAuth firebaseAuth) {
+            FirebaseUser firebaseUser = firebaseAuth.getCurrentUser();
+            if (firebaseUser != null) {
+                Toast.makeText(LoginActivity.this, "User is found!", Toast.LENGTH_LONG).show();
+                Intent intent = new Intent(LoginActivity.this, MainActivity.class);
+                startActivity(intent);
+                finish();
+            }
+        }
+    };
 
     @Override
     protected void onCreate(Bundle savedInstance){

@@ -1,7 +1,10 @@
 package com.example.locateapet.ui.gallery;
 
+import static android.content.ContentValues.TAG;
+
 import android.content.Intent;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -17,10 +20,19 @@ import com.example.locateapet.MainActivity;
 import com.example.locateapet.R;
 import com.example.locateapet.databinding.FragmentGalleryBinding;
 import com.example.locateapet.ui.login.LoginActivity;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
 
 public class GalleryFragment extends Fragment {
 
     private FragmentGalleryBinding binding;
+
+    TextView phone;
 
 
     public View onCreateView(@NonNull LayoutInflater inflater,
@@ -30,10 +42,35 @@ public class GalleryFragment extends Fragment {
 
         binding = FragmentGalleryBinding.inflate(inflater, container, false);
         View root = binding.getRoot();
+        phone = binding.phoneCens;
+        final String[] mobile = {""};
 
-        final TextView textView = binding.textGallery;
-        galleryViewModel.getText().observe(getViewLifecycleOwner(), textView::setText);
+        FirebaseDatabase database =  FirebaseDatabase.getInstance("https://vol-project-2d4b0-default-rtdb.europe-west1.firebasedatabase.app/");
+        FirebaseAuth mAuth = FirebaseAuth.getInstance();
+        FirebaseUser user = mAuth.getCurrentUser();
+        String reportId;
+        reportId = user.getUid();
+        DatabaseReference DBref = FirebaseDatabase.getInstance("https://vol-project-2d4b0-default-rtdb.europe-west1.firebasedatabase.app/").getReference().child("Users").child(reportId);
+        DBref.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                 if (dataSnapshot.exists()){
+                     mobile[0] = dataSnapshot.child("phone").getValue(String.class);
+                     phone.setText("Current phone number: " + mobile[0]);
+                 }else{
+                     mobile[0] = "Error retrieving phone number!";
+                     phone.setText(mobile[0]);
+                 }
+            }
 
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+                Log.d(TAG, databaseError.getMessage()); //Don't ignore errors!
+            }
+        });
+
+        /*final TextView textView = binding.textGallery;
+        galleryViewModel.getText().observe(getViewLifecycleOwner(), textView::setText);*/
 
         return root;
     }
