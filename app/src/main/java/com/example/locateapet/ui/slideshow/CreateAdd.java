@@ -237,8 +237,12 @@ public class CreateAdd extends Fragment {
         mRef.child("species").setValue(species_str[0]);
         StorageReference storageRef = storage.getReference();
         StorageReference mountainsRef = storageRef.child(reportId).child("photo.jpg");
-        mountainsRef.putFile(global_Uri);
-        mRef.child("picture").setValue(mountainsRef.toString());
+        if (global_Uri != null){
+            mountainsRef.putFile(global_Uri);
+            mRef.child("picture").setValue(mountainsRef.toString());
+        }else{
+            mRef.child("picture").setValue("gs://vol-project-2d4b0.appspot.com/default-img/not-available.jpg ");
+        }
 
         database.getReference().child("Users").child(reportId).child("counter_of_uploads").setValue(u_counter + 1);
         Toast.makeText(getContext(), "Report uploaded!", Toast.LENGTH_LONG).show();
