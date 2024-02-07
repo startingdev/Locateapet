@@ -159,13 +159,14 @@ public class SMS_Conf_Page extends AppCompatActivity {
         signInWithPhoneAuthCredential(credential);
     }
 
+    //creating credential to save to mAuth
     private void signInWithPhoneAuthCredential(PhoneAuthCredential credential) {
         mAuth.signInWithCredential(credential)
                 .addOnCompleteListener(SMS_Conf_Page.this, new OnCompleteListener<AuthResult>() {
                     @Override
                     public void onComplete(@NonNull Task<AuthResult> task) {
                         if (task.isSuccessful()) {
-
+                            //saved login data to database successfully!
                             database =  FirebaseDatabase.getInstance("https://vol-project-2d4b0-default-rtdb.europe-west1.firebasedatabase.app/");
                             user = mAuth.getCurrentUser();
                             String reportId;

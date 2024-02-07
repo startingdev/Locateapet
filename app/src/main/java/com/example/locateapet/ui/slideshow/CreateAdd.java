@@ -53,6 +53,7 @@ import java.util.Objects;
 
 public class CreateAdd extends Fragment {
 
+    //binding establishment (element access variable)
     private FragmentSlideshowBinding binding;
 
     //FirebaseDatabase database = FirebaseDatabase.getInstance("https://vol-project-2d4b0-default-rtdb.europe-west1.firebasedatabase.app/");
@@ -62,12 +63,16 @@ public class CreateAdd extends Fragment {
 
     //ReportRef.setValue("Hello, World!");
 
+    //string species variable
     final String[] species_str = {""};
+
+    //position of roller element
     final int[] species_list_index = new int[1];
     EditText header;
     EditText desc;
     EditText species;
 
+    //upload uri (pict hard drive adress)
     Uri global_Uri;
 
     Drawable picture;
@@ -75,6 +80,7 @@ public class CreateAdd extends Fragment {
 
     Button upload, cancel, picker;
 
+    //auth system that is used to retrieve user
     FirebaseAuth mAuth;
     FirebaseStorage storage;
     ImageView selected;
@@ -102,6 +108,7 @@ public class CreateAdd extends Fragment {
         selected = binding.imageShowcase;
         species_list = binding.spinnerSpecies;
 
+        //Google intent for grabbing picture (URI)
         ActivityResultLauncher<PickVisualMediaRequest> pickMedia =
                 registerForActivityResult(new ActivityResultContracts.PickVisualMedia(), uri -> {
                     // Callback is invoked after the user selects a media item or closes the
@@ -121,6 +128,7 @@ public class CreateAdd extends Fragment {
         final String[] desc_str = new String[1];*/
 
 
+        //setting up choice for species and saving picked parameter
         species_list.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
@@ -134,6 +142,8 @@ public class CreateAdd extends Fragment {
 
             }
         });
+
+        //initialisation of picker
 
         picker.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -180,8 +190,12 @@ public class CreateAdd extends Fragment {
                 String reportId;
                 reportId = user.getUid();*/
                 //counter[0] = Integer.parseInt(database.getReference().child("Users").child(reportId).child("counter_of_uploads").get().toString());
+
+                //new user created (upload action started)
                 User_uploads user_e = new User_uploads(species_str);
                 user_e.updateUserCounter();
+
+
                 /*storage = FirebaseStorage.getInstance();
                 DatabaseReference mRef =  database.getReference().child("Reports").child(reportId).child(String.valueOf(0));
                 mRef.child("header").setValue(header_str[0]);
@@ -207,6 +221,8 @@ public class CreateAdd extends Fragment {
         return root;
     }
 
+
+    //method that initiates data variables and proceed to upload data, while also reading upload count
     public void upload_data(int u_counter, final String[] species_str){
 
         //init
@@ -232,11 +248,12 @@ public class CreateAdd extends Fragment {
         mRef.child("header").setValue(header_str[0]);
         //mRef.child("age").setValue(header_str);
         //mRef.child("gender").setValue(f);
-
         mRef.child("description").setValue(desc_str[0]);
         mRef.child("species").setValue(species_str[0]);
         StorageReference storageRef = storage.getReference();
         StorageReference mountainsRef = storageRef.child(reportId).child("photo.jpg");
+
+        //seeing whether picture is chosen or not
         if (global_Uri != null){
             mountainsRef.putFile(global_Uri);
             mRef.child("picture").setValue(mountainsRef.toString());
@@ -244,11 +261,17 @@ public class CreateAdd extends Fragment {
             mRef.child("picture").setValue("gs://vol-project-2d4b0.appspot.com/default-img/not-available.jpg ");
         }
 
+        //updating counter of uploads
         database.getReference().child("Users").child(reportId).child("counter_of_uploads").setValue(u_counter + 1);
+
+        //process finished successfully!
         Toast.makeText(getContext(), "Report uploaded!", Toast.LENGTH_LONG).show();
         Intent intent = new Intent(getContext(), MainActivity.class);
         startActivity(intent);
     }
+
+
+    //aftermath of grabbing picture
     @Override
     public void onActivityResult(int reqCode, int resultCode, Intent data) {
         super.onActivityResult(reqCode, resultCode, data);
@@ -270,6 +293,9 @@ public class CreateAdd extends Fragment {
             //Toast.makeText(getContext(), "You haven't picked image",Toast.LENGTH_LONG).show();
         }
     }
+
+
+    //the class that reads uploads and needed to start the uploading process
 
     class User_uploads {
         private int user_counter;
@@ -316,6 +342,8 @@ public class CreateAdd extends Fragment {
         }).start();
     }*/
 
+
+    //exiting of current fragment
     @Override
     public void onDestroyView() {
         super.onDestroyView();

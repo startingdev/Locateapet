@@ -30,6 +30,7 @@ import com.google.firebase.database.ValueEventListener;
 
 public class GalleryFragment extends Fragment {
 
+    //binding establishment (element access variable)
     private FragmentGalleryBinding binding;
 
     TextView phone;
@@ -43,14 +44,19 @@ public class GalleryFragment extends Fragment {
         binding = FragmentGalleryBinding.inflate(inflater, container, false);
         View root = binding.getRoot();
         phone = binding.phoneCens;
+
+        //phone number variable
         final String[] mobile = {""};
 
+        //database variables (including current user)
         FirebaseDatabase database =  FirebaseDatabase.getInstance("https://vol-project-2d4b0-default-rtdb.europe-west1.firebasedatabase.app/");
         FirebaseAuth mAuth = FirebaseAuth.getInstance();
         FirebaseUser user = mAuth.getCurrentUser();
         String reportId;
         reportId = user.getUid();
         DatabaseReference DBref = FirebaseDatabase.getInstance("https://vol-project-2d4b0-default-rtdb.europe-west1.firebasedatabase.app/").getReference().child("Users").child(reportId);
+
+        //reading data (phone number) from database
         DBref.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
@@ -63,6 +69,8 @@ public class GalleryFragment extends Fragment {
                  }
             }
 
+
+            //error retrieving data
             @Override
             public void onCancelled(DatabaseError databaseError) {
                 Log.d(TAG, databaseError.getMessage()); //Don't ignore errors!
@@ -75,6 +83,8 @@ public class GalleryFragment extends Fragment {
         return root;
     }
 
+
+    //button for switching (changing) phone number
     public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
         boolean auth_switch = true;
 
@@ -90,12 +100,14 @@ public class GalleryFragment extends Fragment {
         }
     }
 
+    //startup for login actitvity
     public void switch_activ(){
         Intent i = new Intent(getContext(), LoginActivity.class);
 
         startActivity(i);
     }
 
+    //exiting fragment
     @Override
     public void onDestroyView() {
         super.onDestroyView();
