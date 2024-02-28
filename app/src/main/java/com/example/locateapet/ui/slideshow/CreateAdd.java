@@ -256,9 +256,9 @@ public class CreateAdd extends Fragment {
         //seeing whether picture is chosen or not
         if (global_Uri != null){
             mountainsRef.putFile(global_Uri);
-            mRef.child("picture").setValue(mountainsRef.toString());
+            mRef.child("picture").child(String.valueOf(u_counter)).setValue(mountainsRef.toString());
         }else{
-            mRef.child("picture").setValue("gs://vol-project-2d4b0.appspot.com/default-img/not-available.jpg ");
+            mRef.child("picture").child(String.valueOf(u_counter)).setValue("gs://vol-project-2d4b0.appspot.com/default-img/not-available.jpg ");
         }
 
         //updating counter of uploads

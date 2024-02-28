@@ -35,7 +35,6 @@ public class GalleryFragment extends Fragment {
 
     TextView phone;
 
-
     public View onCreateView(@NonNull LayoutInflater inflater,
                              ViewGroup container, Bundle savedInstanceState) {
         GalleryViewModel galleryViewModel =
