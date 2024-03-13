@@ -1,13 +1,19 @@
 package com.example.locateapet;
 
+import static java.lang.Integer.parseInt;
+
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
 import android.view.Menu;
+import android.widget.TextView;
 
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.Task;
 import com.google.android.material.snackbar.Snackbar;
 import com.google.android.material.navigation.NavigationView;
 
+import androidx.annotation.NonNull;
 import androidx.navigation.NavController;
 import androidx.navigation.Navigation;
 import androidx.navigation.ui.AppBarConfiguration;
@@ -29,20 +35,25 @@ import java.util.concurrent.TimeUnit;
 public class MainActivity extends AppCompatActivity {
     static RecyclerView recyclerView;
 
+    public static String saved_count = "";
     private AppBarConfiguration mAppBarConfiguration;
     private ActivityMainBinding binding;
     int amount_cont;
-    public void updateUserCounter() {
+    public void updateUserCounter(TextView text) {
         DatabaseReference DBref = FirebaseDatabase.getInstance("https://vol-project-2d4b0-default-rtdb.europe-west1.firebasedatabase.app/").getReference().child("count");
-        DBref.addListenerForSingleValueEvent(new ValueEventListener() {
+        Log.d("Point 1 reached!", ":D");
+        DBref.get().addOnCompleteListener(new OnCompleteListener<DataSnapshot>() {
             @Override
-            public void onDataChange(DataSnapshot dataSnapshot) {
-                //user_counter=Integer.parseInt(Objects.requireNonNull(dataSnapshot.child("counter_of_uploads").getValue(String.class)));
-                amount_cont = Objects.requireNonNull(dataSnapshot.getValue(Integer.class));
-
-            }
-            @Override
-            public void onCancelled(DatabaseError databaseError) {
+            public void onComplete(@NonNull Task<DataSnapshot> task) {
+                if (task.isSuccessful()) {
+                    DataSnapshot dataSnapshot = task.getResult();
+                    amount_cont = Objects.requireNonNull(dataSnapshot.getValue(Integer.class));
+                    text.setText(String.valueOf(amount_cont));
+                    Log.d("Point 2 reached! Value loaded:", String.valueOf(amount_cont));
+                    Log.d("Value text:", text.getText().toString());
+                }else {
+                    Log.d("Specific error", Objects.requireNonNull(task.getException().getMessage())); //Never ignore potential errors!
+                }
             }
         });
     }
@@ -50,10 +61,10 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
         binding = ActivityMainBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
         recyclerView = findViewById(R.id.recycle_view);
+        TextView checker = findViewById(R.id.counter_checker);
         setSupportActionBar(binding.appBarMain.toolbar);
         binding.appBarMain.fab.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -62,13 +73,25 @@ public class MainActivity extends AppCompatActivity {
                         .setAction("Action", null).show();
             }
         });
-        updateUserCounter();
+
+        updateUserCounter(checker);
+
         try {
             TimeUnit.SECONDS.sleep(3);
         } catch (InterruptedException e) {
             throw new RuntimeException(e);
         }
-        Log.d("amount ", String.valueOf(amount_cont));
+
+        do{
+            Log.d("Saved_count (1st) val:", MainActivity.saved_count);
+            saved_count = (String) checker.getText();
+        }while(checker.getText().equals("Empty"));
+
+        try {
+            TimeUnit.SECONDS.sleep(3);
+        } catch (InterruptedException e) {
+            throw new RuntimeException(e);
+        }
         DrawerLayout drawer = binding.drawerLayout;
         NavigationView navigationView = binding.navView;
         // Passing each menu ID as a set of Ids because each

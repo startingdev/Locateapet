@@ -14,6 +14,7 @@ import android.widget.TextView;
 
 import com.example.locateapet.placeholder.PlaceholderContent.PlaceholderItem;
 import com.example.locateapet.databinding.FragmentItemBinding;
+import com.example.locateapet.ui.gallery.GalleryFragment;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DataSnapshot;
@@ -44,7 +45,11 @@ public class MyItemRecyclerViewAdapter extends RecyclerView.Adapter<MyItemRecycl
 
     @Override
     public ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-        getData();
+        /*do {
+            getData(MainActivity.saved_count);
+            Log.d("Saved_count val:", MainActivity.saved_count);
+        }while(MainActivity.saved_count.equals("Empty"));*/
+
         /*try {
             TimeUnit.SECONDS.sleep(3);
         } catch (InterruptedException e) {
@@ -72,8 +77,7 @@ public class MyItemRecyclerViewAdapter extends RecyclerView.Adapter<MyItemRecycl
     @Override
     public void onBindViewHolder(final ViewHolder holder, int position) {
         reports.add(test_report);
-        getData();
-
+        Log.d("catcher_f", MainActivity.saved_count);
         holder.mItem = mValues.get(position);
         holder.desc_View.setText(reports.get(position).description);
         holder.head_View.setText(reports.get(position).header);
@@ -81,7 +85,7 @@ public class MyItemRecyclerViewAdapter extends RecyclerView.Adapter<MyItemRecycl
         second_holder[position] = holder;
     }
 
-    public void getData() {
+    public void getData(String saved_count) {
 
         Log.d("123 ","reports.get(0).description");
         DatabaseReference DBref = FirebaseDatabase.getInstance("https://vol-project-2d4b0-default-rtdb.europe-west1.firebasedatabase.app/").getReference().child("Reports");
@@ -109,6 +113,8 @@ public class MyItemRecyclerViewAdapter extends RecyclerView.Adapter<MyItemRecycl
                                 Log.d("head ",reports.get(count_data[0]).header);
                                 Log.d("spec",reports.get(count_data[0]).species);
                                 Log.d("pic",reports.get(count_data[0]).picture);
+                                Log.d("amount ", saved_count);
+
                                 second_holder[count_data[0]].mItem = mValues.get(count_data[0]);
                                 second_holder[count_data[0]].desc_View.setText(reports.get(count_data[0]).description);
                                 second_holder[count_data[0]].head_View.setText(reports.get(count_data[0]).header);
