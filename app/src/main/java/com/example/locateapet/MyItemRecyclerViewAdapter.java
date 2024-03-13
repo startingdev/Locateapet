@@ -15,6 +15,8 @@ import android.widget.TextView;
 import com.example.locateapet.placeholder.PlaceholderContent.PlaceholderItem;
 import com.example.locateapet.databinding.FragmentItemBinding;
 import com.example.locateapet.ui.gallery.GalleryFragment;
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DataSnapshot;
@@ -38,13 +40,17 @@ import java.util.concurrent.TimeUnit;
 public class MyItemRecyclerViewAdapter extends RecyclerView.Adapter<MyItemRecyclerViewAdapter.ViewHolder> {
 
     private final List<PlaceholderItem> mValues;
+    int amount_cont = 0;
 
+    DataSnapshot data;
     public MyItemRecyclerViewAdapter(List<PlaceholderItem> items) {
         mValues = items;
     }
 
     @Override
     public ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
+        
+        //TextView parent.findViewById(R.id.counter_checker);
         /*do {
             getData(MainActivity.saved_count);
             Log.d("Saved_count val:", MainActivity.saved_count);
@@ -76,13 +82,22 @@ public class MyItemRecyclerViewAdapter extends RecyclerView.Adapter<MyItemRecycl
 
     @Override
     public void onBindViewHolder(final ViewHolder holder, int position) {
+        try {
+            TimeUnit.SECONDS.sleep(3);
+        } catch (InterruptedException e) {
+            throw new RuntimeException(e);
+        }
+        //TextView text_temp = holder.itemView.findViewById(R.id.counter_checker);
+        TextView text_temp = MainActivity.checker;
         reports.add(test_report);
-        Log.d("catcher_f", MainActivity.saved_count);
+        Log.d("catcher_f", text_temp.getText().toString());
         holder.mItem = mValues.get(position);
         holder.desc_View.setText(reports.get(position).description);
         holder.head_View.setText(reports.get(position).header);
         holder.spec_View.setText(reports.get(position).species);
         second_holder[position] = holder;
+        
+        
     }
 
     public void getData(String saved_count) {
@@ -133,17 +148,51 @@ public class MyItemRecyclerViewAdapter extends RecyclerView.Adapter<MyItemRecycl
             }
         });
     }
+    //
 
     @Override
     public int getItemCount() {
         //return reports.size();
-        return mValues.size();
+        DatabaseReference DBref = FirebaseDatabase.getInstance("https://vol-project-2d4b0-default-rtdb.europe-west1.firebasedatabase.app/").getReference().child("count");
+        Log.d("Point 1 reached!", ":D");
+
+
+        DBref.get().addOnCompleteListener(new OnCompleteListener<DataSnapshot>() {
+            @Override
+            public void onComplete(@NonNull Task<DataSnapshot> task) {
+                if (task.isSuccessful()) {
+                    DataSnapshot dataSnapshot = task.getResult();
+                    data = dataSnapshot;
+                    amount_cont = Objects.requireNonNull(dataSnapshot.getValue(Integer.class));
+                    //text.setText(String.valueOf(amount_cont));
+                    //checker.setText("Val found");
+                    Log.d("Point 2 reached! Value loaded:", String.valueOf(amount_cont));
+                    //Log.d("Value text:", text.getText().toString());
+                }else {
+                    Log.d("Specific error", Objects.requireNonNull(task.getException().getMessage())); //Never ignore potential errors!
+                }
+
+            }
+            //return  Objects.requireNonNull(data.getValue(Integer.class));
+
+        });
+
+
+
+
+        /*while(amount_cont == 0) {
+            Log.d("Nah", "Im outta here");
+        }*/
+        return amount_cont;
+        //return mValues.size();
     }
 
     public class ViewHolder extends RecyclerView.ViewHolder {
         public final TextView desc_View;
         public final TextView head_View;
         public final TextView spec_View;
+
+        //public final TextView grab_data;
        // public final ImageView pic_View;
         public PlaceholderItem mItem;
 

@@ -36,10 +36,13 @@ public class MainActivity extends AppCompatActivity {
     static RecyclerView recyclerView;
 
     public static String saved_count = "";
+
+    static TextView checker;
+    TextView check_two;
     private AppBarConfiguration mAppBarConfiguration;
     private ActivityMainBinding binding;
     int amount_cont;
-    public void updateUserCounter(TextView text) {
+    /*public void updateUserCounter(TextView text, TextView checker) {
         DatabaseReference DBref = FirebaseDatabase.getInstance("https://vol-project-2d4b0-default-rtdb.europe-west1.firebasedatabase.app/").getReference().child("count");
         Log.d("Point 1 reached!", ":D");
         DBref.get().addOnCompleteListener(new OnCompleteListener<DataSnapshot>() {
@@ -49,22 +52,26 @@ public class MainActivity extends AppCompatActivity {
                     DataSnapshot dataSnapshot = task.getResult();
                     amount_cont = Objects.requireNonNull(dataSnapshot.getValue(Integer.class));
                     text.setText(String.valueOf(amount_cont));
+                    checker.setText("Val found");
                     Log.d("Point 2 reached! Value loaded:", String.valueOf(amount_cont));
                     Log.d("Value text:", text.getText().toString());
+
                 }else {
                     Log.d("Specific error", Objects.requireNonNull(task.getException().getMessage())); //Never ignore potential errors!
                 }
+                //return 0;
             }
         });
-    }
+    }*/
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         binding = ActivityMainBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
+        checker = findViewById(R.id.counter_checker);
+        check_two = findViewById(R.id.checker_change);
         recyclerView = findViewById(R.id.recycle_view);
-        TextView checker = findViewById(R.id.counter_checker);
         setSupportActionBar(binding.appBarMain.toolbar);
         binding.appBarMain.fab.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -74,24 +81,28 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
-        updateUserCounter(checker);
+        //updateUserCounter(checker, check_two);
 
-        try {
+        /*try {
             TimeUnit.SECONDS.sleep(3);
         } catch (InterruptedException e) {
             throw new RuntimeException(e);
-        }
+        }*/
 
-        do{
+        /*do{
             Log.d("Saved_count (1st) val:", MainActivity.saved_count);
             saved_count = (String) checker.getText();
-        }while(checker.getText().equals("Empty"));
+        }while(checker.getText().equals("Empty"));*/
 
-        try {
+        /*while (true){
+            Log.d("Value_tracker", saved_count);
+        }*/
+
+        /*try {
             TimeUnit.SECONDS.sleep(3);
         } catch (InterruptedException e) {
             throw new RuntimeException(e);
-        }
+        }*/
         DrawerLayout drawer = binding.drawerLayout;
         NavigationView navigationView = binding.navView;
         // Passing each menu ID as a set of Ids because each
