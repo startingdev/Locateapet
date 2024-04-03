@@ -192,7 +192,7 @@ public class MyItemRecyclerViewAdapter extends RecyclerView.Adapter<MyItemRecycl
             }
         });
 
-        return InitReturn();
+        return 0;
 
     }
 
@@ -203,10 +203,10 @@ public class MyItemRecyclerViewAdapter extends RecyclerView.Adapter<MyItemRecycl
         readData(new MyCallback() {
             @Override
             public void onCallback(String value) {
-                Log.d("insert cool search tag", value);
+                //Log.d("insert cool search tag", value);
                 //temp[0] = value;
 
-                ReturnTriggered();
+                //ReturnTriggered();
             }
         });
 
