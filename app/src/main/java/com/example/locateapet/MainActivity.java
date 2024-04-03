@@ -24,15 +24,14 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.locateapet.databinding.ActivityMainBinding;
 import com.google.firebase.database.DataSnapshot;
-import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
-import com.google.firebase.database.ValueEventListener;
 
 import java.util.Objects;
-import java.util.concurrent.TimeUnit;
+
 
 public class MainActivity extends AppCompatActivity {
+
     static RecyclerView recyclerView;
 
     public static String saved_count = "";
@@ -41,8 +40,11 @@ public class MainActivity extends AppCompatActivity {
     TextView check_two;
     private AppBarConfiguration mAppBarConfiguration;
     private ActivityMainBinding binding;
-    int amount_cont;
-    /*public void updateUserCounter(TextView text, TextView checker) {
+
+    String amount_cont;
+
+
+    /*public void updateUserCounter(TextView checker, TextView text, MyCallback myCallback) {
         DatabaseReference DBref = FirebaseDatabase.getInstance("https://vol-project-2d4b0-default-rtdb.europe-west1.firebasedatabase.app/").getReference().child("count");
         Log.d("Point 1 reached!", ":D");
         DBref.get().addOnCompleteListener(new OnCompleteListener<DataSnapshot>() {
@@ -50,10 +52,11 @@ public class MainActivity extends AppCompatActivity {
             public void onComplete(@NonNull Task<DataSnapshot> task) {
                 if (task.isSuccessful()) {
                     DataSnapshot dataSnapshot = task.getResult();
-                    amount_cont = Objects.requireNonNull(dataSnapshot.getValue(Integer.class));
-                    text.setText(String.valueOf(amount_cont));
-                    checker.setText("Val found");
+                    amount_cont = Objects.requireNonNull(dataSnapshot.getValue(String.class));
+                    //text.setText(String.valueOf(amount_cont));
+                    //checker.setText("Val found");
                     Log.d("Point 2 reached! Value loaded:", String.valueOf(amount_cont));
+                    myCallback.onCallback(amount_cont);
                     Log.d("Value text:", text.getText().toString());
 
                 }else {
@@ -61,8 +64,10 @@ public class MainActivity extends AppCompatActivity {
                 }
                 //return 0;
             }
-        });
-    }*/
+        });*/
+
+
+    //}
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -81,7 +86,12 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
-        //updateUserCounter(checker, check_two);
+        /*updateUserCounter(checker, check_two, new MyCallback() {
+            @Override
+            public void onCallback(String value) {
+                Log.d("Final Value:", value);
+            }
+        });*/
 
         /*try {
             TimeUnit.SECONDS.sleep(3);

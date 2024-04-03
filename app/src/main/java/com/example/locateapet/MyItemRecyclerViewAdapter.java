@@ -1,5 +1,7 @@
 package com.example.locateapet;
 
+import static androidx.fragment.app.FragmentManager.TAG;
+
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.recyclerview.widget.RecyclerView;
@@ -39,8 +41,14 @@ import java.util.concurrent.TimeUnit;
  */
 public class MyItemRecyclerViewAdapter extends RecyclerView.Adapter<MyItemRecyclerViewAdapter.ViewHolder> {
 
+    private String container_number = "-1";
+
+    public interface MyCallback {
+        void onCallback(String value);
+    }
+
     private final List<PlaceholderItem> mValues;
-    int amount_cont = 0;
+    String amount_cont;
 
     DataSnapshot data;
     public MyItemRecyclerViewAdapter(List<PlaceholderItem> items) {
@@ -100,6 +108,24 @@ public class MyItemRecyclerViewAdapter extends RecyclerView.Adapter<MyItemRecycl
         
     }
 
+    public void ReturnTriggered() {
+        //Log.d( "Container_number triggered", container_number);
+
+        //InitReturn();
+        //return Integer.parseInt(container_number);
+    }
+
+    public int InitReturn(){
+        while (Objects.equals(container_number, "-1")){
+            try {
+                TimeUnit.SECONDS.sleep(1);
+            } catch (InterruptedException e) {
+                throw new RuntimeException(e);
+            }
+        }
+        return Integer.parseInt(container_number);
+    }
+
     public void getData(String saved_count) {
 
         Log.d("123 ","reports.get(0).description");
@@ -128,7 +154,7 @@ public class MyItemRecyclerViewAdapter extends RecyclerView.Adapter<MyItemRecycl
                                 Log.d("head ",reports.get(count_data[0]).header);
                                 Log.d("spec",reports.get(count_data[0]).species);
                                 Log.d("pic",reports.get(count_data[0]).picture);
-                                Log.d("amount ", saved_count);
+                                //Log.d("amount ", saved_count);
 
                                 second_holder[count_data[0]].mItem = mValues.get(count_data[0]);
                                 second_holder[count_data[0]].desc_View.setText(reports.get(count_data[0]).description);
@@ -148,43 +174,47 @@ public class MyItemRecyclerViewAdapter extends RecyclerView.Adapter<MyItemRecycl
             }
         });
     }
-    //
 
-    @Override
-    public int getItemCount() {
-        //return reports.size();
-        DatabaseReference DBref = FirebaseDatabase.getInstance("https://vol-project-2d4b0-default-rtdb.europe-west1.firebasedatabase.app/").getReference().child("count");
-        Log.d("Point 1 reached!", ":D");
+    public int readData(MyCallback myCallback) {
+        DatabaseReference databaseReference = FirebaseDatabase.getInstance("https://vol-project-2d4b0-default-rtdb.europe-west1.firebasedatabase.app/").getReference().child("count");
 
-
-        DBref.get().addOnCompleteListener(new OnCompleteListener<DataSnapshot>() {
+        final int[] num = {0};
+        databaseReference.get().addOnCompleteListener(new OnCompleteListener<DataSnapshot>() {
             @Override
             public void onComplete(@NonNull Task<DataSnapshot> task) {
                 if (task.isSuccessful()) {
-                    DataSnapshot dataSnapshot = task.getResult();
-                    data = dataSnapshot;
-                    amount_cont = Objects.requireNonNull(dataSnapshot.getValue(Integer.class));
-                    //text.setText(String.valueOf(amount_cont));
-                    //checker.setText("Val found");
-                    Log.d("Point 2 reached! Value loaded:", String.valueOf(amount_cont));
-                    //Log.d("Value text:", text.getText().toString());
-                }else {
-                    Log.d("Specific error", Objects.requireNonNull(task.getException().getMessage())); //Never ignore potential errors!
+                    num[0] = task.getResult().getValue(Integer.class);
+                    container_number = String.valueOf(num[0]);
+                    myCallback.onCallback(String.valueOf(num[0]));
+                } else {
+                    Log.d("Error reading containers data", task.getException().getMessage());
                 }
-
             }
-            //return  Objects.requireNonNull(data.getValue(Integer.class));
-
         });
 
+        return InitReturn();
 
+    }
 
+    @Override
+    public int getItemCount() {
 
-        /*while(amount_cont == 0) {
-            Log.d("Nah", "Im outta here");
-        }*/
-        return amount_cont;
-        //return mValues.size();
+        final String[] temp = {"0"};
+        readData(new MyCallback() {
+            @Override
+            public void onCallback(String value) {
+                Log.d("insert cool search tag", value);
+                //temp[0] = value;
+
+                ReturnTriggered();
+            }
+        });
+
+        //Log.d("Final tag v2", temp[0]);
+
+        //return Integer.parseInt(temp[0]);
+
+        return 0;
     }
 
     public class ViewHolder extends RecyclerView.ViewHolder {
