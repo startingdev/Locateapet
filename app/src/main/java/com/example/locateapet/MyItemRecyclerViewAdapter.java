@@ -1,26 +1,21 @@
 package com.example.locateapet;
 
-import static androidx.fragment.app.FragmentManager.TAG;
+import static android.content.ContentValues.TAG;
 
 import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 import androidx.recyclerview.widget.RecyclerView;
 
-import android.net.Uri;
+import android.os.Handler;
+import android.os.Looper;
 import android.util.Log;
 import android.view.LayoutInflater;
-import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.example.locateapet.placeholder.PlaceholderContent.PlaceholderItem;
 import com.example.locateapet.databinding.FragmentItemBinding;
-import com.example.locateapet.ui.gallery.GalleryFragment;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
-import com.google.firebase.auth.FirebaseAuth;
-import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
@@ -28,10 +23,7 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
 import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Iterator;
 import java.util.List;
-import java.util.ListIterator;
 import java.util.Objects;
 import java.util.concurrent.TimeUnit;
 
@@ -39,16 +31,88 @@ import java.util.concurrent.TimeUnit;
  * {@link RecyclerView.Adapter} that can display a {@link PlaceholderItem}.
  * TODO: Replace the implementation with code for your data type.
  */
+
 public class MyItemRecyclerViewAdapter extends RecyclerView.Adapter<MyItemRecyclerViewAdapter.ViewHolder> {
 
-    private String container_number = "-1";
 
-    public interface MyCallback {
-        void onCallback(String value);
+
+    private int countFromFirebase = 0;
+    private DatabaseReference databaseReference;
+    private ValueEventListener valueEventListener;
+    private List<PlaceholderItem> mValues;
+
+    public MyItemRecyclerViewAdapter(List<PlaceholderItem> items) {
+        mValues = items;
+        databaseReference = FirebaseDatabase.getInstance("https://vol-project-2d4b0-default-rtdb.europe-west1.firebasedatabase.app/").getReference().child("count");
+        setupFirebaseListener();
     }
 
+    private void setupFirebaseListener() {
+        valueEventListener = new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                if (dataSnapshot.exists()) {
+                    countFromFirebase = dataSnapshot.getValue(Integer.class);
+                    notifyDataSetChanged();
+                }
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) {
+                Log.e(TAG, "Error reading containers data: " + error.getMessage());
+            }
+        };
+
+        databaseReference.addValueEventListener(valueEventListener);
+    }
+
+    @NonNull
+    @Override
+    public ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
+        LayoutInflater inflater = LayoutInflater.from(parent.getContext());
+        return new ViewHolder(FragmentItemBinding.inflate(inflater, parent, false));
+    }
+
+    @Override
+    public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
+        PlaceholderItem item = mValues.get(position);
+        holder.bind(item);
+    }
+
+    @Override
+    public int getItemCount() {
+        return countFromFirebase;
+    }
+
+    public class ViewHolder extends RecyclerView.ViewHolder {
+        private final FragmentItemBinding binding;
+
+        public ViewHolder(FragmentItemBinding binding) {
+            super(binding.getRoot());
+            this.binding = binding;
+        }
+
+        public void bind(PlaceholderItem item) {
+            binding.description.setText(String.valueOf(binding.description));
+            binding.header.setText(String.valueOf(binding.header));
+            binding.species.setText(String.valueOf(binding.species));
+        }
+    }
+}
+
+/*public class MyItemRecyclerViewAdapter extends RecyclerView.Adapter<MyItemRecyclerViewAdapter.ViewHolder> {
+
+    private String container_number = "-1";
+    private int countFromFirebase = 0;
+
+    public interface MyCallback {
+        void onCallback(int value);
+    }
+
+
+
     private final List<PlaceholderItem> mValues;
-    String amount_cont;
+    //String amount_cont;
 
     DataSnapshot data;
     public MyItemRecyclerViewAdapter(List<PlaceholderItem> items) {
@@ -57,7 +121,7 @@ public class MyItemRecyclerViewAdapter extends RecyclerView.Adapter<MyItemRecycl
 
     @Override
     public ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-        
+
         //TextView parent.findViewById(R.id.counter_checker);
         /*do {
             getData(MainActivity.saved_count);
@@ -69,6 +133,9 @@ public class MyItemRecyclerViewAdapter extends RecyclerView.Adapter<MyItemRecycl
         } catch (InterruptedException e) {
             throw new RuntimeException(e);
         }*/
+
+
+        /*Log.e("start checkmark:", "onCreateViewHolder");
         return new ViewHolder(FragmentItemBinding.inflate(LayoutInflater.from(parent.getContext()), parent, false));
 
     }
@@ -90,13 +157,13 @@ public class MyItemRecyclerViewAdapter extends RecyclerView.Adapter<MyItemRecycl
 
     @Override
     public void onBindViewHolder(final ViewHolder holder, int position) {
-        try {
+        /*try {
             TimeUnit.SECONDS.sleep(3);
         } catch (InterruptedException e) {
             throw new RuntimeException(e);
-        }
+        }*/
         //TextView text_temp = holder.itemView.findViewById(R.id.counter_checker);
-        TextView text_temp = MainActivity.checker;
+        /*TextView text_temp = MainActivity.checker;
         reports.add(test_report);
         Log.d("catcher_f", text_temp.getText().toString());
         holder.mItem = mValues.get(position);
@@ -104,18 +171,83 @@ public class MyItemRecyclerViewAdapter extends RecyclerView.Adapter<MyItemRecycl
         holder.head_View.setText(reports.get(position).header);
         holder.spec_View.setText(reports.get(position).species);
         second_holder[position] = holder;
-        
-        
+
+        readData(new MyCallback() {
+            @Override
+            public void onCallback(int value) {
+                countFromFirebase = value;
+                Log.d("Fire in the hole!", "Code fired!");
+                Log.d("Current value of CountFrFirebase:", String.valueOf(countFromFirebase));
+                notifyDataSetChanged();
+                // Вызов notifyDataSetChanged() из активности
+                /* Handler(Looper.getMainLooper()).post(new Runnable() {
+                    @Override
+                    public void run() {
+                        notifyDataSetChanged(); // Обновление RecyclerView с новыми данными
+                    }
+                });*/
+           /*}
+        });
     }
 
-    public void ReturnTriggered() {
+    public void readData(MyCallback myCallback) {
+        DatabaseReference databaseReference = FirebaseDatabase.getInstance("https://vol-project-2d4b0-default-rtdb.europe-west1.firebasedatabase.app/").getReference().child("count");
+
+        /*databaseReference.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                if (dataSnapshot.exists()) {
+                    int num = dataSnapshot.getValue(Integer.class);
+                    container_number = String.valueOf(num);
+                    Log.d("Retrieved value", String.valueOf(num));
+
+                    myCallback.onCallback(num);
+                }
+                Log.d("My shi jammed!", "bruh");
+
+                //else {
+                    //Log.d("Error reading containers data", task.getException().getMessage());
+                //}
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) {
+                Log.d(TAG, error.getMessage());
+            }
+        });*/
+
+        /*databaseReference.get().addOnCompleteListener(new OnCompleteListener<DataSnapshot>() {
+            //@Override
+            @Override
+            public void onComplete(@NonNull Task<DataSnapshot> task) {
+                if (task.isSuccessful()) {
+                    int num = task.getResult().getValue(Integer.class);
+                    container_number = String.valueOf(num);
+                    Log.d("Retrieved value", String.valueOf(num));
+                    myCallback.onCallback(num); // Вызываем колбэк с полученными данными
+                } else {
+                    Log.d("Error reading containers data", task.getException().getMessage());
+                }
+            }
+        });
+    }*/
+
+    /*public void ReturnTriggered() {
         //Log.d( "Container_number triggered", container_number);
 
         //InitReturn();
         //return Integer.parseInt(container_number);
-    }
+    }*/
 
-    public int InitReturn(){
+    /*void readData(new MyCallback() {
+        @Override
+        public void onCallback(int value) {
+            countFromFirebase = value;
+            RecyclerView.Adapter.notifyDataSetChanged(); // Обновление RecyclerView с новым значением
+        }
+    });*/
+
+    /*public int InitReturn(){
         while (Objects.equals(container_number, "-1")){
             try {
                 TimeUnit.SECONDS.sleep(1);
@@ -124,9 +256,9 @@ public class MyItemRecyclerViewAdapter extends RecyclerView.Adapter<MyItemRecycl
             }
         }
         return Integer.parseInt(container_number);
-    }
+    }*/
 
-    public void getData(String saved_count) {
+    /*public void getData(String saved_count) {
 
         Log.d("123 ","reports.get(0).description");
         DatabaseReference DBref = FirebaseDatabase.getInstance("https://vol-project-2d4b0-default-rtdb.europe-west1.firebasedatabase.app/").getReference().child("Reports");
@@ -173,9 +305,12 @@ public class MyItemRecyclerViewAdapter extends RecyclerView.Adapter<MyItemRecycl
                 Log.d("kys ", databaseError.toString());
             }
         });
-    }
+    }*/
 
-    public int readData(MyCallback myCallback) {
+    // Использование метода readData
+
+
+    /*public int readData(MyCallback myCallback) {
         DatabaseReference databaseReference = FirebaseDatabase.getInstance("https://vol-project-2d4b0-default-rtdb.europe-west1.firebasedatabase.app/").getReference().child("count");
 
         final int[] num = {0};
@@ -185,6 +320,8 @@ public class MyItemRecyclerViewAdapter extends RecyclerView.Adapter<MyItemRecycl
                 if (task.isSuccessful()) {
                     num[0] = task.getResult().getValue(Integer.class);
                     container_number = String.valueOf(num[0]);
+                    Log.d("Check 1", container_number);
+
                     myCallback.onCallback(String.valueOf(num[0]));
                 } else {
                     Log.d("Error reading containers data", task.getException().getMessage());
@@ -192,30 +329,18 @@ public class MyItemRecyclerViewAdapter extends RecyclerView.Adapter<MyItemRecycl
             }
         });
 
+        Log.d("Check 2", container_number);
+
         return 0;
 
-    }
+    }*/
 
-    @Override
+    /*@Override
     public int getItemCount() {
-
-        final String[] temp = {"0"};
-        readData(new MyCallback() {
-            @Override
-            public void onCallback(String value) {
-                //Log.d("insert cool search tag", value);
-                //temp[0] = value;
-
-                //ReturnTriggered();
-            }
-        });
-
-        //Log.d("Final tag v2", temp[0]);
-
-        //return Integer.parseInt(temp[0]);
-
-        return 0;
+        Log.d("Return count from firebase:", String.valueOf(countFromFirebase));
+        return countFromFirebase;
     }
+
 
     public class ViewHolder extends RecyclerView.ViewHolder {
         public final TextView desc_View;
@@ -231,11 +356,12 @@ public class MyItemRecyclerViewAdapter extends RecyclerView.Adapter<MyItemRecycl
             desc_View = binding.description;
             head_View = binding.header;
             spec_View = binding.species;
-        }
+        }*/
+
 
      //   @Override
    //     public String toString() {
  //           return super.toString() + " '" + mContentView.getText() + "'";
       //  }
-    }
-}
+    /*}
+}*/
