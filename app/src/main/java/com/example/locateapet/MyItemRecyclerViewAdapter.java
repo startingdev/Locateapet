@@ -5,6 +5,7 @@ import static android.content.ContentValues.TAG;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
+import android.net.Uri;
 import android.os.Handler;
 import android.os.Looper;
 import android.util.Log;
@@ -113,13 +114,17 @@ public class MyItemRecyclerViewAdapter extends RecyclerView.Adapter<MyItemRecycl
             this.binding = binding;
         }
         public void bind(PlaceholderItem item) {
+            binding.description.setText("Loading data...");
+            binding.header.setText("Loading data...");
+            binding.species.setText("Loading data...");
+
             Log.d("123 ","reports.get(0).description");
             DatabaseReference DBref = FirebaseDatabase.getInstance("https://vol-project-2d4b0-default-rtdb.europe-west1.firebasedatabase.app/").getReference().child("Reports");
             DBref.addValueEventListener(new ValueEventListener() {
                 @Override
                 public void onDataChange(DataSnapshot dataSnapshot) {
-                    final int[] count_data = {0};
-                    Log.d("kys ","reports.get(0).description");
+                    //final int[] count_data = {0};
+                    //Log.d("kys ","reports.get(0).description");
                     if (dataSnapshot.exists()) {
                         //   user_counter = Objects.requireNonNull(dataSnapshot.child("counter_of_uploads").getValue(Integer.class));
                         //upload_data(user_counter, species_str);
@@ -127,12 +132,17 @@ public class MyItemRecyclerViewAdapter extends RecyclerView.Adapter<MyItemRecycl
                             //User user = snapshot.getValue(User.class);
                             //System.out.println(user.email);
                             for (DataSnapshot secondSnapshot : snapshot.getChildren()) {
-                                Reports report = new Reports("desc", "head", "spec", "pict");
-                                report.description = secondSnapshot.child("description").getValue(String.class);
-                                report.header = secondSnapshot.child("header").getValue(String.class);
-                                report.species = secondSnapshot.child("species").getValue(String.class);
-                                report.picture = secondSnapshot.child("picture").getValue(String.class);
-                                if (count_data[0] < 2) {
+                                //Reports report = new Reports("desc", "head", "spec", "pict");
+                                //report.description = secondSnapshot.child("description").getValue(String.class);
+                                //report.header = secondSnapshot.child("header").getValue(String.class);
+                                //report.species = secondSnapshot.child("species").getValue(String.class);
+                                //report.picture = secondSnapshot.child("picture").getValue(String.class);
+
+                                binding.description.setText(secondSnapshot.child("description").getValue(String.class));
+                                binding.header.setText(secondSnapshot.child("header").getValue(String.class));
+                                binding.species.setText(secondSnapshot.child("species").getValue(String.class));
+                                binding.imageShowcase.setImageURI(Uri.parse(secondSnapshot.child("picture").getValue(String.class)));
+                                /*if (count_data[0] < 2) {
                                     reports.set(count_data[0], report);
                                     Log.d("123 ","reports.get(0).description");
                                     Log.d("desc ",reports.get(count_data[0]).description);
@@ -146,7 +156,7 @@ public class MyItemRecyclerViewAdapter extends RecyclerView.Adapter<MyItemRecycl
                                     second_holder[count_data[0]].spec_View.setText(reports.get(count_data[0]).species);
                                     //final ViewHolder holder = MainActivity.recyclerView.getChildViewHolder(MainActivity.recyclerView.getChildAt(count_data[0]));
                                     count_data[0] += 1;
-                                }
+                                }*/
 
                             }
                         }
@@ -157,10 +167,6 @@ public class MyItemRecyclerViewAdapter extends RecyclerView.Adapter<MyItemRecycl
                     Log.d("kys ", databaseError.toString());
                 }
             });
-            binding.description.setText(String.valueOf(binding.description));
-            binding.header.setText(String.valueOf(binding.header));
-            binding.species.setText(String.valueOf(binding.species));
-
         }
     }
 }
