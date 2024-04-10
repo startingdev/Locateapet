@@ -35,6 +35,21 @@ import java.util.concurrent.TimeUnit;
 public class MyItemRecyclerViewAdapter extends RecyclerView.Adapter<MyItemRecyclerViewAdapter.ViewHolder> {
 
 
+    public class Reports {
+        public String description;
+        public String header;
+        public String species;
+        public String picture;
+        public Reports(String description,String header,String species,String picture) {
+            this.description = description;
+            this.header = header;
+            this.species = species;
+            this.picture = picture;
+        }
+    }
+    List<Reports> reports = new ArrayList<>();
+    Reports test_report = new Reports("desc", "head", "spec", "pict");
+    ViewHolder[] second_holder = new ViewHolder[2];
 
     private int countFromFirebase = 0;
     private DatabaseReference databaseReference;
@@ -85,17 +100,67 @@ public class MyItemRecyclerViewAdapter extends RecyclerView.Adapter<MyItemRecycl
     }
 
     public class ViewHolder extends RecyclerView.ViewHolder {
+        public final TextView desc_View;
+        public final TextView head_View;
+        public final TextView spec_View;
         private final FragmentItemBinding binding;
 
         public ViewHolder(FragmentItemBinding binding) {
             super(binding.getRoot());
+            desc_View = binding.description;
+            head_View = binding.header;
+            spec_View = binding.species;
             this.binding = binding;
         }
-
         public void bind(PlaceholderItem item) {
+            Log.d("123 ","reports.get(0).description");
+            DatabaseReference DBref = FirebaseDatabase.getInstance("https://vol-project-2d4b0-default-rtdb.europe-west1.firebasedatabase.app/").getReference().child("Reports");
+            DBref.addValueEventListener(new ValueEventListener() {
+                @Override
+                public void onDataChange(DataSnapshot dataSnapshot) {
+                    final int[] count_data = {0};
+                    Log.d("kys ","reports.get(0).description");
+                    if (dataSnapshot.exists()) {
+                        //   user_counter = Objects.requireNonNull(dataSnapshot.child("counter_of_uploads").getValue(Integer.class));
+                        //upload_data(user_counter, species_str);
+                        for (DataSnapshot snapshot : dataSnapshot.getChildren()) {
+                            //User user = snapshot.getValue(User.class);
+                            //System.out.println(user.email);
+                            for (DataSnapshot secondSnapshot : snapshot.getChildren()) {
+                                Reports report = new Reports("desc", "head", "spec", "pict");
+                                report.description = secondSnapshot.child("description").getValue(String.class);
+                                report.header = secondSnapshot.child("header").getValue(String.class);
+                                report.species = secondSnapshot.child("species").getValue(String.class);
+                                report.picture = secondSnapshot.child("picture").getValue(String.class);
+                                if (count_data[0] < 2) {
+                                    reports.set(count_data[0], report);
+                                    Log.d("123 ","reports.get(0).description");
+                                    Log.d("desc ",reports.get(count_data[0]).description);
+                                    Log.d("head ",reports.get(count_data[0]).header);
+                                    Log.d("spec",reports.get(count_data[0]).species);
+                                    Log.d("pic",reports.get(count_data[0]).picture);
+                                    //Log.d("amount ", saved_count);
+
+                                    second_holder[count_data[0]].desc_View.setText(reports.get(count_data[0]).description);
+                                    second_holder[count_data[0]].head_View.setText(reports.get(count_data[0]).header);
+                                    second_holder[count_data[0]].spec_View.setText(reports.get(count_data[0]).species);
+                                    //final ViewHolder holder = MainActivity.recyclerView.getChildViewHolder(MainActivity.recyclerView.getChildAt(count_data[0]));
+                                    count_data[0] += 1;
+                                }
+
+                            }
+                        }
+                    }
+                }
+                @Override
+                public void onCancelled(DatabaseError databaseError) {
+                    Log.d("kys ", databaseError.toString());
+                }
+            });
             binding.description.setText(String.valueOf(binding.description));
             binding.header.setText(String.valueOf(binding.header));
             binding.species.setText(String.valueOf(binding.species));
+
         }
     }
 }
