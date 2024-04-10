@@ -13,15 +13,20 @@ import android.view.LayoutInflater;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
+import com.bumptech.glide.Glide;
 import com.example.locateapet.placeholder.PlaceholderContent.PlaceholderItem;
 import com.example.locateapet.databinding.FragmentItemBinding;
 import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.OnFailureListener;
+import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
+import com.google.firebase.storage.FirebaseStorage;
+import com.google.firebase.storage.StorageReference;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -141,7 +146,34 @@ public class MyItemRecyclerViewAdapter extends RecyclerView.Adapter<MyItemRecycl
                                 binding.description.setText(secondSnapshot.child("description").getValue(String.class));
                                 binding.header.setText(secondSnapshot.child("header").getValue(String.class));
                                 binding.species.setText(secondSnapshot.child("species").getValue(String.class));
-                                binding.imageShowcase.setImageURI(Uri.parse(secondSnapshot.child("picture").getValue(String.class)));
+                                //binding.imageShowcase.setImageURI(Uri.parse(secondSnapshot.child("picture").getValue(String.class)));
+
+                                /*Glide.with(binding.getRoot().getContext())
+                                        .load(Uri.parse(secondSnapshot.child("picture").getValue(String.class)))
+                                        .into(binding.imageShowcase);*/
+
+                                FirebaseStorage storage = FirebaseStorage.getInstance();
+                                StorageReference storageRef = storage.getReferenceFromUrl(Objects.requireNonNull(secondSnapshot.child("picture").getValue(String.class)));
+
+                                // Загрузите изображение в виде потока
+                                storageRef.getDownloadUrl().addOnSuccessListener(new OnSuccessListener<Uri>() {
+                                    @Override
+                                    public void onSuccess(Uri uri) {
+                                        // Получите URI загруженного изображения
+                                        String imageUrl = uri.toString();
+
+                                        // Загрузите изображение в ImageView
+                                        Glide.with(binding.getRoot().getContext())
+                                                .load(imageUrl)
+                                                .into(binding.imageShowcase);
+                                    }
+                                }).addOnFailureListener(new OnFailureListener() {
+                                    @Override
+                                    public void onFailure(@NonNull Exception exception) {
+                                        Log.e("Image parse failed", exception.toString());
+                                    }
+                                });
+
                                 /*if (count_data[0] < 2) {
                                     reports.set(count_data[0], report);
                                     Log.d("123 ","reports.get(0).description");

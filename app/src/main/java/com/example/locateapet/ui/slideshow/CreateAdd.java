@@ -258,12 +258,28 @@ public class CreateAdd extends Fragment {
             mountainsRef.putFile(global_Uri);
             mRef.child("picture").setValue(mountainsRef.toString());
         }else{
-            mRef.child("picture").setValue("gs://vol-project-2d4b0.appspot.com/default-img/not-available.jpg ");
+            mRef.child("picture").setValue("gs://vol-project-2d4b0.appspot.com/default-img/not-available.jpg");
         }
 
         //updating counter of uploads
-        database.getReference().child("Users").child(reportId).child("counter_of_uploads").setValue(u_counter + 1);
+        //database.getReference().child("Users").child(reportId).child("counter_of_uploads").setValue(u_counter + 1);
 
+
+        DatabaseReference countRef = database.getReference().child("count");
+        countRef.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                int curr_general_count = dataSnapshot.getValue(Integer.class);
+                database.getReference().child("count").setValue(curr_general_count + 1);
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) {
+
+            }
+        });
+
+        //database.getReference().child("count").setValue(Integer.parseInt(database.getReference().child("count").get().toString()) + 1);
         //process finished successfully!
         Toast.makeText(getContext(), "Report uploaded!", Toast.LENGTH_LONG).show();
         Intent intent = new Intent(getContext(), MainActivity.class);
