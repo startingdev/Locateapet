@@ -34,6 +34,8 @@ import com.example.locateapet.MainActivity;
 import com.example.locateapet.databinding.FragmentSlideshowBinding;
 import com.example.locateapet.ui.home.HomeFragment;
 import com.example.locateapet.ui.login.SMS_Conf_Page;
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DataSnapshot;
@@ -262,28 +264,44 @@ public class CreateAdd extends Fragment {
         }
 
         //updating counter of uploads
-        //database.getReference().child("Users").child(reportId).child("counter_of_uploads").setValue(u_counter + 1);
+        database.getReference().child("Users").child(reportId).child("counter_of_uploads").setValue(u_counter + 1);
 
 
-        DatabaseReference countRef = database.getReference().child("count");
+        //DatabaseReference countRef = database.getReference().child("count");
+        DatabaseReference countRef = database.getReference("count");
         countRef.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
-            public void onDataChange(DataSnapshot dataSnapshot) {
-                int curr_general_count = dataSnapshot.getValue(Integer.class);
-                database.getReference().child("count").setValue(curr_general_count + 1);
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                if (dataSnapshot.exists()) {
+                    int currentCountUpdates = dataSnapshot.getValue(Integer.class);
+                    countRef.setValue(currentCountUpdates + 1);
+                }
             }
 
             @Override
-            public void onCancelled(@NonNull DatabaseError error) {
-
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+                // Обработка ошибок, если необходимо
             }
         });
 
-        //database.getReference().child("count").setValue(Integer.parseInt(database.getReference().child("count").get().toString()) + 1);
-        //process finished successfully!
+            //@Override
+            //@Override
+            //public void onComplete(@NonNull Task<DataSnapshot> task) {
+
+            //}
+
+            /*@Override
+            public void onCancelled(@NonNull DatabaseError error) {
+                Log.e("Reading global counter fail", error.toString());
+            }*/
+        /*});*/
+
         Toast.makeText(getContext(), "Report uploaded!", Toast.LENGTH_LONG).show();
         Intent intent = new Intent(getContext(), MainActivity.class);
         startActivity(intent);
+
+        //database.getReference().child("count").setValue(Integer.parseInt(database.getReference().child("count").get().toString()) + 1);
+        //process finished successfully!
     }
 
 

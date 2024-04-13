@@ -97,7 +97,7 @@ public class MyItemRecyclerViewAdapter extends RecyclerView.Adapter<MyItemRecycl
     @Override
     public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
         PlaceholderItem item = mValues.get(position);
-        holder.bind(item);
+        holder.bind(item, position);
     }
 
     @Override
@@ -118,10 +118,10 @@ public class MyItemRecyclerViewAdapter extends RecyclerView.Adapter<MyItemRecycl
             spec_View = binding.species;
             this.binding = binding;
         }
-        public void bind(PlaceholderItem item) {
-            binding.description.setText("Loading data...");
-            binding.header.setText("Loading data...");
-            binding.species.setText("Loading data...");
+        public void bind(PlaceholderItem item, int position) {
+            //binding.description.setText("Loading data...");
+            //binding.header.setText("Loading data...");
+            //binding.species.setText("Loading data...");
 
             Log.d("123 ","reports.get(0).description");
             DatabaseReference DBref = FirebaseDatabase.getInstance("https://vol-project-2d4b0-default-rtdb.europe-west1.firebasedatabase.app/").getReference().child("Reports");
@@ -133,6 +133,8 @@ public class MyItemRecyclerViewAdapter extends RecyclerView.Adapter<MyItemRecycl
                     if (dataSnapshot.exists()) {
                         //   user_counter = Objects.requireNonNull(dataSnapshot.child("counter_of_uploads").getValue(Integer.class));
                         //upload_data(user_counter, species_str);
+                        int index_sec = 0;
+                        int index_fir = 0;
                         for (DataSnapshot snapshot : dataSnapshot.getChildren()) {
                             //User user = snapshot.getValue(User.class);
                             //System.out.println(user.email);
@@ -143,36 +145,47 @@ public class MyItemRecyclerViewAdapter extends RecyclerView.Adapter<MyItemRecycl
                                 //report.species = secondSnapshot.child("species").getValue(String.class);
                                 //report.picture = secondSnapshot.child("picture").getValue(String.class);
 
-                                binding.description.setText(secondSnapshot.child("description").getValue(String.class));
-                                binding.header.setText(secondSnapshot.child("header").getValue(String.class));
-                                binding.species.setText(secondSnapshot.child("species").getValue(String.class));
+
+                                if (position == index_sec){
+                                    binding.description.setText(secondSnapshot.child("description").getValue(String.class));
+                                    binding.header.setText(secondSnapshot.child("header").getValue(String.class));
+                                    binding.species.setText(secondSnapshot.child("species").getValue(String.class));
+
+                                    FirebaseStorage storage = FirebaseStorage.getInstance();
+                                    StorageReference storageRef = storage.getReferenceFromUrl(Objects.requireNonNull(secondSnapshot.child("picture").getValue(String.class)));
+
+                                    // Загрузите изображение в виде потока
+                                    storageRef.getDownloadUrl().addOnSuccessListener(new OnSuccessListener<Uri>() {
+                                        @Override
+                                        public void onSuccess(Uri uri) {
+                                            // Получите URI загруженного изображения
+                                            String imageUrl = uri.toString();
+
+                                            // Загрузите изображение в ImageView
+                                            Glide.with(binding.getRoot().getContext())
+                                                    .load(imageUrl)
+                                                    .into(binding.imageShowcase);
+                                        }
+                                    }).addOnFailureListener(new OnFailureListener() {
+                                        @Override
+                                        public void onFailure(@NonNull Exception exception) {
+                                            Log.e("Image parse failed", exception.toString());
+                                        }
+                                    });
+                                    break;
+                                }else{
+                                    binding.description.setText("Loading data...");
+                                    binding.header.setText("Loading data...");
+                                    binding.species.setText("Loading data...");
+                                    index_sec += 1;
+                                    //continue;
+                                }
                                 //binding.imageShowcase.setImageURI(Uri.parse(secondSnapshot.child("picture").getValue(String.class)));
 
                                 /*Glide.with(binding.getRoot().getContext())
                                         .load(Uri.parse(secondSnapshot.child("picture").getValue(String.class)))
                                         .into(binding.imageShowcase);*/
 
-                                FirebaseStorage storage = FirebaseStorage.getInstance();
-                                StorageReference storageRef = storage.getReferenceFromUrl(Objects.requireNonNull(secondSnapshot.child("picture").getValue(String.class)));
-
-                                // Загрузите изображение в виде потока
-                                storageRef.getDownloadUrl().addOnSuccessListener(new OnSuccessListener<Uri>() {
-                                    @Override
-                                    public void onSuccess(Uri uri) {
-                                        // Получите URI загруженного изображения
-                                        String imageUrl = uri.toString();
-
-                                        // Загрузите изображение в ImageView
-                                        Glide.with(binding.getRoot().getContext())
-                                                .load(imageUrl)
-                                                .into(binding.imageShowcase);
-                                    }
-                                }).addOnFailureListener(new OnFailureListener() {
-                                    @Override
-                                    public void onFailure(@NonNull Exception exception) {
-                                        Log.e("Image parse failed", exception.toString());
-                                    }
-                                });
 
                                 /*if (count_data[0] < 2) {
                                     reports.set(count_data[0], report);
@@ -265,7 +278,7 @@ public class MyItemRecyclerViewAdapter extends RecyclerView.Adapter<MyItemRecycl
         } catch (InterruptedException e) {
             throw new RuntimeException(e);
         }*/
-        //TextView text_temp = holder.itemView.findViewById(R.id.counter_checker);
+//TextView text_temp = holder.itemView.findViewById(R.id.counter_checker);
         /*TextView text_temp = MainActivity.checker;
         reports.add(test_report);
         Log.d("catcher_f", text_temp.getText().toString());
@@ -410,7 +423,7 @@ public class MyItemRecyclerViewAdapter extends RecyclerView.Adapter<MyItemRecycl
         });
     }*/
 
-    // Использование метода readData
+// Использование метода readData
 
 
     /*public int readData(MyCallback myCallback) {
@@ -462,9 +475,9 @@ public class MyItemRecyclerViewAdapter extends RecyclerView.Adapter<MyItemRecycl
         }*/
 
 
-     //   @Override
-   //     public String toString() {
- //           return super.toString() + " '" + mContentView.getText() + "'";
-      //  }
+//   @Override
+//     public String toString() {
+//           return super.toString() + " '" + mContentView.getText() + "'";
+//  }
     /*}
 }*/
