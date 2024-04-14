@@ -227,7 +227,7 @@ public class CreateAdd extends Fragment {
     //method that initiates data variables and proceed to upload data, while also reading upload count
     public void upload_data(int u_counter, final String[] species_str){
 
-        //init
+        //variables init
         final int[] species_list_index = new int[1];
         final String[] header_str = new String[1];
         final String[] desc_str = new String[1];
@@ -240,49 +240,54 @@ public class CreateAdd extends Fragment {
 
         mAuth = FirebaseAuth.getInstance();
 
-        //writing data
+        //sending data to firebase
         FirebaseDatabase database =  FirebaseDatabase.getInstance("https://vol-project-2d4b0-default-rtdb.europe-west1.firebasedatabase.app/");
         FirebaseUser user = mAuth.getCurrentUser();
         String reportId;
         reportId = user.getUid();
         storage = FirebaseStorage.getInstance();
         DatabaseReference mRef =  database.getReference().child("Reports").child(reportId).child(String.valueOf(u_counter));
-        mRef.child("header").setValue(header_str[0]);
-        //mRef.child("age").setValue(header_str);
-        //mRef.child("gender").setValue(f);
-        mRef.child("description").setValue(desc_str[0]);
-        mRef.child("species").setValue(species_str[0]);
-        StorageReference storageRef = storage.getReference();
-        StorageReference mountainsRef = storageRef.child(reportId).child("photo.jpg");
+        if (!header_str[0].equals("")){
+            mRef.child("header").setValue(header_str[0]);
+            //mRef.child("age").setValue(header_str);
+            //mRef.child("gender").setValue(f);
+            mRef.child("species").setValue(species_str[0]);
+            if (!desc_str[0].equals("")) {
+                mRef.child("description").setValue(desc_str[0]);
+            }else{
+                mRef.child("description").setValue("[No description provided]");
+            }
+            StorageReference storageRef = storage.getReference();
+            StorageReference mountainsRef = storageRef.child(reportId).child("photo.jpg");
 
-        //seeing whether picture is chosen or not
-        if (global_Uri != null){
-            mountainsRef.putFile(global_Uri);
-            mRef.child("picture").setValue(mountainsRef.toString());
-        }else{
-            mRef.child("picture").setValue("gs://vol-project-2d4b0.appspot.com/default-img/not-available.jpg");
-        }
+            //seeing whether picture is set or not
+            if (global_Uri != null){
+                mountainsRef.putFile(global_Uri);
+                mRef.child("picture").setValue(mountainsRef.toString());
+            }else{
+                mRef.child("picture").setValue("gs://vol-project-2d4b0.appspot.com/default-img/not-available.jpg");
+            }
 
-        //updating counter of uploads
-        database.getReference().child("Users").child(reportId).child("counter_of_uploads").setValue(u_counter + 1);
+            //updating counter of uploads
+            database.getReference().child("Users").child(reportId).child("counter_of_uploads").setValue(u_counter + 1);
 
 
-        //DatabaseReference countRef = database.getReference().child("count");
-        DatabaseReference countRef = database.getReference("count");
-        countRef.addListenerForSingleValueEvent(new ValueEventListener() {
-            @Override
-            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                if (dataSnapshot.exists()) {
-                    int currentCountUpdates = dataSnapshot.getValue(Integer.class);
-                    countRef.setValue(currentCountUpdates + 1);
+            //DatabaseReference countRef = database.getReference().child("count");
+            DatabaseReference countRef = database.getReference("count");
+            countRef.addListenerForSingleValueEvent(new ValueEventListener() {
+                @Override
+                public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                    if (dataSnapshot.exists()) {
+                        int currentCountUpdates = dataSnapshot.getValue(Integer.class);
+                        countRef.setValue(currentCountUpdates + 1);
+                    }
                 }
-            }
 
-            @Override
-            public void onCancelled(@NonNull DatabaseError databaseError) {
-                // Обработка ошибок, если необходимо
-            }
-        });
+                @Override
+                public void onCancelled(@NonNull DatabaseError databaseError) {
+                    // Обработка ошибок, если необходимо
+                }
+            });
 
             //@Override
             //@Override
@@ -294,14 +299,19 @@ public class CreateAdd extends Fragment {
             public void onCancelled(@NonNull DatabaseError error) {
                 Log.e("Reading global counter fail", error.toString());
             }*/
-        /*});*/
+            /*});*/
 
-        Toast.makeText(getContext(), "Report uploaded!", Toast.LENGTH_LONG).show();
-        Intent intent = new Intent(getContext(), MainActivity.class);
-        startActivity(intent);
+            Toast.makeText(getContext(), "Report uploaded!", Toast.LENGTH_LONG).show();
+            Intent intent = new Intent(getContext(), MainActivity.class);
+            startActivity(intent);
 
-        //database.getReference().child("count").setValue(Integer.parseInt(database.getReference().child("count").get().toString()) + 1);
-        //process finished successfully!
+            //database.getReference().child("count").setValue(Integer.parseInt(database.getReference().child("count").get().toString()) + 1);
+            //process finished successfully!
+        }else {
+            Toast.makeText(getContext(), "Please type in header for the report!", Toast.LENGTH_LONG).show();
+        }
+
+
     }
 
 
