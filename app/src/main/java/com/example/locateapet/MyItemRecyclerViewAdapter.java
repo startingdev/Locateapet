@@ -32,6 +32,7 @@ import java.util.Objects;
 
 public class MyItemRecyclerViewAdapter extends RecyclerView.Adapter<MyItemRecyclerViewAdapter.ViewHolder> {
 
+    //list that contains all of the reports available
     private List<Reports> reports = new ArrayList<>();
     private DatabaseReference databaseReference;
     private ValueEventListener valueEventListener;
@@ -42,10 +43,12 @@ public class MyItemRecyclerViewAdapter extends RecyclerView.Adapter<MyItemRecycl
     }
 
     private void setupFirebaseListener() {
+
+        //loading reports onto device
         valueEventListener = new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                reports.clear(); // Очистите текущий список перед обновлением
+                reports.clear();
                 for (DataSnapshot userSnapshot : dataSnapshot.getChildren()) {
                     for (DataSnapshot reportSnapshot : userSnapshot.getChildren()) {
                         String description = reportSnapshot.child("description").getValue(String.class);
@@ -60,6 +63,7 @@ public class MyItemRecyclerViewAdapter extends RecyclerView.Adapter<MyItemRecycl
                         }
                     }
                 }
+                //updating the recycler view (by calling onBindViewHolder)
                 notifyDataSetChanged();
             }
 
@@ -81,12 +85,12 @@ public class MyItemRecyclerViewAdapter extends RecyclerView.Adapter<MyItemRecycl
 
     @Override
     public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
-        holder.bind(reports.get(position)); // Передайте объект Reports на позиции position
+        holder.bind(reports.get(position)); //Sending current report to be displayed
     }
 
     @Override
     public int getItemCount() {
-        return reports.size(); // Возвращайте размер списка reports
+        return reports.size(); // The amount of loaded reports
     }
 
     public static class ViewHolder extends RecyclerView.ViewHolder {
@@ -104,7 +108,7 @@ public class MyItemRecyclerViewAdapter extends RecyclerView.Adapter<MyItemRecycl
         }
 
         public void bind(Reports report) {
-            // Привяжите данные объекта Reports к вашему макету ViewHolder
+            // Binding the report data to recycler view
             desc_View.setText(report.description);
             head_View.setText(report.header);
             spec_View.setText(report.species);
@@ -112,14 +116,14 @@ public class MyItemRecyclerViewAdapter extends RecyclerView.Adapter<MyItemRecycl
             FirebaseStorage storage = FirebaseStorage.getInstance();
             StorageReference storageRef = storage.getReferenceFromUrl(report.picture);
 
-            // Загрузите изображение в виде потока
+            // Loading the image in a thread
             storageRef.getDownloadUrl().addOnSuccessListener(new OnSuccessListener<Uri>() {
                 @Override
                 public void onSuccess(Uri uri) {
-                    // Получите URI загруженного изображения
+                    // Gettin URI of the selected image
                     String imageUrl = uri.toString();
 
-                    // Загрузите изображение в ImageView
+                    // Loading selected image onto firebase
                     Glide.with(binding.getRoot().getContext())
                             .load(imageUrl)
                             .into(binding.imageShowcase);

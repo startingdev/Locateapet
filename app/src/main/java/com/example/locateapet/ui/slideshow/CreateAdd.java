@@ -177,6 +177,14 @@ public class CreateAdd extends Fragment {
             }
         });
 
+        cancel.setOnClickListener(new View.OnClickListener(){
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(getContext(), MainActivity.class);
+                startActivity(intent);
+            }
+        });
+
         upload.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -247,18 +255,20 @@ public class CreateAdd extends Fragment {
         reportId = user.getUid();
         storage = FirebaseStorage.getInstance();
         DatabaseReference mRef =  database.getReference().child("Reports").child(reportId).child(String.valueOf(u_counter));
+
+        //checking whether the header grabber is empty
         if (!header_str[0].equals("")){
             mRef.child("header").setValue(header_str[0]);
-            //mRef.child("age").setValue(header_str);
-            //mRef.child("gender").setValue(f);
             mRef.child("species").setValue(species_str[0]);
+
+            //setting the desc value to default one (only if it is empty)
             if (!desc_str[0].equals("")) {
                 mRef.child("description").setValue(desc_str[0]);
             }else{
                 mRef.child("description").setValue("[No description provided]");
             }
             StorageReference storageRef = storage.getReference();
-            StorageReference mountainsRef = storageRef.child(reportId).child("photo.jpg");
+            StorageReference mountainsRef = storageRef.child(reportId).child("photo"+ String.valueOf(u_counter) + ".jpg");
 
             //seeing whether picture is set or not
             if (global_Uri != null){
@@ -385,6 +395,7 @@ public class CreateAdd extends Fragment {
             picker.setImageURI(uri);
         }).start();
     }*/
+
 
 
     //exiting of current fragment
