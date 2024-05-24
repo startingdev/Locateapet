@@ -61,7 +61,7 @@ public class GalleryFragment extends Fragment {
             public void onDataChange(DataSnapshot dataSnapshot) {
                  if (dataSnapshot.exists()){
                      mobile[0] = dataSnapshot.child("phone").getValue(String.class);
-                     phone.setText("Current phone number: " + mobile[0]);
+                     phone.setText("Ваш номер телефона: " + mobile[0]);
                  }else{
                      mobile[0] = "Error retrieving phone number!";
                      phone.setText(mobile[0]);
