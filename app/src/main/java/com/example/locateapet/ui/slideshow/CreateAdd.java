@@ -265,7 +265,7 @@ public class CreateAdd extends Fragment {
             if (!desc_str[0].equals("")) {
                 mRef.child("description").setValue(desc_str[0]);
             }else{
-                mRef.child("description").setValue("[No description provided]");
+                mRef.child("description").setValue("[Описание не предоставлено]");
             }
             StorageReference storageRef = storage.getReference();
             StorageReference mountainsRef = storageRef.child(reportId).child("photo"+ String.valueOf(u_counter) + ".jpg");

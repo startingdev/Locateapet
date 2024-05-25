@@ -1,9 +1,9 @@
 <resources>
-    <string name="app_name">Locateapet</string>
+    <string name="app_name">Найди питомца</string>
     <string name="navigation_drawer_open">Open navigation drawer</string>
     <string name="navigation_drawer_close">Close navigation drawer</string>
-    <string name="nav_header_title">Locate a pet</string>
-    <string name="nav_header_subtitle">supportlocateapetapp@gmail.com</string>
+    <string name="nav_header_title">Найди питомца</string>
+    <string name="nav_header_subtitle">timkadedu@gmail.com</string>
     <string name="nav_header_desc">Navigation header</string>
     <string name="action_settings">Settings</string>
 

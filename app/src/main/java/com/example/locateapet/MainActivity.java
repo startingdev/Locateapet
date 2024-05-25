@@ -78,13 +78,13 @@ public class MainActivity extends AppCompatActivity {
         check_two = findViewById(R.id.checker_change);
         recyclerView = findViewById(R.id.recycle_view);
         setSupportActionBar(binding.appBarMain.toolbar);
-        binding.appBarMain.fab.setOnClickListener(new View.OnClickListener() {
+        /*binding.appBarMain.fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
                         .setAction("Action", null).show();
             }
-        });
+        });*/
 
         /*updateUserCounter(checker, check_two, new MyCallback() {
             @Override
