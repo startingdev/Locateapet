@@ -1,33 +1,85 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
+    android:background="#FFFFFFFF"
+    android:orientation="vertical"
+    android:id="@+id/container"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:paddingTop="96dp"
-    tools:context=".ui.login.SMS_Conf_Page">
-
-    <EditText
+    android:layout_height="match_parent">
+    <ScrollView
+        android:id="@+id/rqn4o2kobdm9"
         android:layout_width="match_parent"
-        android:id="@+id/confirmation_code"
-        android:layout_height="wrap_content"
-        android:hint="@string/login_hint_code"
-        android:layout_marginLeft="16dp"
-        android:layout_marginTop="16dp"
-        android:layout_marginRight="16dp"
-        android:inputType="numberDecimal"
-        tools:ignore="MissingConstraints" />
+        android:layout_height="0dp"
+        android:layout_weight="1"
+        android:background="#FFFFEAC8"
+        android:paddingTop="18dp"
+        android:paddingBottom="8dp"
+        android:fillViewport="true">
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:orientation="vertical">
+            <TextView
+                android:id="@+id/rqpvfd89ocfn"
+                android:textColor="#000000"
+                android:textSize="24sp"
+                android:gravity="center"
+                android:fontFamily="@font/inter_semibold"
+                android:layout_marginBottom="86dp"
+                android:layout_gravity="center"
+                android:layout_height="wrap_content"
+                android:layout_width="wrap_content"
+                android:text="Найди питомца"
+                />
+            <TextView
+                android:id="@+id/roazrksf1b6"
+                android:textColor="#000000"
+                android:textSize="24sp"
+                android:gravity="center"
+                android:layout_marginBottom="77dp"
+                android:layout_gravity="center"
+                android:fontFamily="@font/inter_semibold"
+                android:layout_height="wrap_content"
+                android:layout_width="wrap_content"
+                android:text="СМС-верификация"
+                />
+            <LinearLayout
+                android:id="@+id/rr51c25yyaz7"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:background="@drawable/sffe0e0e0sw1cr8bffffeac8"
+                android:paddingVertical="20dp"
+                android:paddingHorizontal="17dp"
+                android:layout_marginBottom="75dp"
+                android:layout_marginHorizontal="2dp"
+                android:orientation="vertical">
+                <EditText
+                    android:id="@+id/confirmation_code"
+                    android:textColor="#828282"
+                    android:fontFamily="@font/inter_semibold"
+                    android:textSize="14sp"
+                    android:layout_height="wrap_content"
+                    android:layout_width="wrap_content"
+                    android:hint="Введите код..."
+                    />
+            </LinearLayout>
+            <Button
+                android:id="@+id/confirm_button"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:gravity="center_horizontal"
+                android:background="@drawable/cr8bff175a3e"
+                app:backgroundTint="@null"
+                android:paddingVertical="15dp"
+                android:layout_marginBottom="27dp"
+                android:textColor="#FFEAC8"
+                android:textSize="16sp"
+                android:fontFamily="@font/inter_bold"
+                android:text="Отправить код"
+                android:layout_marginHorizontal="24dp" />
 
-    <Button
-        android:layout_width="wrap_content"
-        android:id="@+id/confirm_button"
-        android:layout_height="wrap_content"
-        android:layout_marginBottom="96dp"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        android:text="@string/login_send_code"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/confirmation_code" />
+        </LinearLayout>
+    </ScrollView>
 
-
-</androidx.constraintlayout.widget.ConstraintLayout>
+</LinearLayout>

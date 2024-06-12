@@ -74,7 +74,7 @@ public class LoginActivity extends AppCompatActivity {
         setContentView(R.layout.activity_login);
 
         phone_number = findViewById(R.id.phone_num);
-        send_phone = findViewById(R.id.login);
+        send_phone = findViewById(R.id.login_trigger);
 
         send_phone.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {

@@ -104,9 +104,7 @@ public class CreateAdd extends Fragment {
         //final int[] counter = new int[1];
         header = binding.header;
         desc = binding.desc;
-        species = binding.specificationSpecies;
         upload = binding.upload;
-        cancel = binding.cancel;
         picker = binding.picker;
         selected = binding.imageShowcase;
         species_list = binding.spinnerSpecies;
@@ -179,13 +177,6 @@ public class CreateAdd extends Fragment {
             }
         });
 
-        cancel.setOnClickListener(new View.OnClickListener(){
-            @Override
-            public void onClick(View v) {
-                Intent intent = new Intent(getContext(), MainActivity.class);
-                startActivity(intent);
-            }
-        });
 
         upload.setOnClickListener(new View.OnClickListener() {
             @Override
