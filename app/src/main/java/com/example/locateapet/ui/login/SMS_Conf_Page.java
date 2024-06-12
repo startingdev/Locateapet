@@ -159,6 +159,8 @@ public class SMS_Conf_Page extends AppCompatActivity {
         signInWithPhoneAuthCredential(credential);
     }
 
+
+
     //creating credential to save to mAuth
     private void signInWithPhoneAuthCredential(PhoneAuthCredential credential) {
         mAuth.signInWithCredential(credential)
@@ -166,55 +168,47 @@ public class SMS_Conf_Page extends AppCompatActivity {
                     @Override
                     public void onComplete(@NonNull Task<AuthResult> task) {
                         if (task.isSuccessful()) {
-                            //saved login data to database successfully!
-                            database =  FirebaseDatabase.getInstance("https://vol-project-2d4b0-default-rtdb.europe-west1.firebasedatabase.app/");
-                            user = mAuth.getCurrentUser();
-                            String reportId;
-                            reportId = user.getUid();
-                            DatabaseReference mRef =  database.getReference().child("Users").child(reportId);
-                            ValueEventListener eventListener = new ValueEventListener() {
-                                @Override
-                                public void onDataChange(DataSnapshot dataSnapshot) {
-                                    if(!dataSnapshot.exists()) {
-                                        mRef.child("counter_of_uploads").setValue(0);
-                                        mRef.child("phone").setValue(mobile);
-                                    }
-                                }
-
-                                @Override
-                                public void onCancelled(DatabaseError databaseError) {
-                                    Log.d(TAG, databaseError.getMessage()); //Don't ignore errors!
-                                }
-                            };
-                            mRef.addListenerForSingleValueEvent(eventListener);
-
-                            Toast.makeText(SMS_Conf_Page.this, "Successfully signed in!", Toast.LENGTH_LONG).show();
-
-                            //verification successful we will start the profile activity
-                            Intent intent = new Intent(SMS_Conf_Page.this, MainActivity.class);
-
-                            startActivity(intent);
-                            /*user = task.getResult().getUser();
-
-
-                            intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
-                            startActivity(intent);*/
-
+                            // Вход выполнен успешно
+                            FirebaseUser user = mAuth.getCurrentUser();
+                            if (user != null) {
+                                saveUserToDatabase(user);
+                                Intent intent = new Intent(SMS_Conf_Page.this, MainActivity.class);
+                                startActivity(intent);
+                                finish();
+                            }
                         } else {
-
-                            //verification unsuccessful.. display an error message
-
-                            String message = "Something is wrong, we will fix it soon...";
+                            // Ошибка входа
+                            String message = "Что-то пошло не так, попробуйте снова позже.";
 
                             if (task.getException() instanceof FirebaseAuthInvalidCredentialsException) {
-                                message = "Invalid code entered...";
+                                message = "Неверный код...";
                             }
 
                             Toast.makeText(SMS_Conf_Page.this, message, Toast.LENGTH_LONG).show();
-
                         }
                     }
                 });
+    }
+
+    private void saveUserToDatabase(FirebaseUser user) {
+        database = FirebaseDatabase.getInstance("https://vol-project-2d4b0-default-rtdb.europe-west1.firebasedatabase.app/");
+        String reportId = user.getUid();
+        DatabaseReference mRef = database.getReference().child("Users").child(reportId);
+
+        mRef.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                if (!dataSnapshot.exists()) {
+                    mRef.child("counter_of_uploads").setValue(0);
+                    mRef.child("phone").setValue(mobile);
+                }
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+                Log.d(TAG, databaseError.getMessage());
+            }
+        });
     }
 
 }

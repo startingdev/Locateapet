@@ -101,9 +101,11 @@ public class GalleryFragment extends Fragment {
 
     //startup for login actitvity
     public void switch_activ(){
+        FirebaseAuth mAuth = FirebaseAuth.getInstance();
+        mAuth.signOut();
         Intent i = new Intent(getContext(), LoginActivity.class);
-
         startActivity(i);
+        getActivity().finish();
     }
 
     //exiting fragment

@@ -39,14 +39,28 @@ public class LoginActivity extends AppCompatActivity {
     Button send_phone;
     public String phone;
 
-    FirebaseAuth mAuth = mAuth = FirebaseAuth.getInstance();
+    @Override
+    protected void onStart() {
+        super.onStart();
+        mAuth.addAuthStateListener(authStateListener);
+    }
+
+    @Override
+    protected void onStop() {
+        super.onStop();
+        if (authStateListener != null) {
+            mAuth.removeAuthStateListener(authStateListener);
+        }
+    }
+
+    FirebaseAuth mAuth = FirebaseAuth.getInstance();
 
     FirebaseAuth.AuthStateListener authStateListener = new FirebaseAuth.AuthStateListener() {
         @Override
         public void onAuthStateChanged(@NonNull FirebaseAuth firebaseAuth) {
             FirebaseUser firebaseUser = firebaseAuth.getCurrentUser();
             if (firebaseUser != null) {
-                Toast.makeText(LoginActivity.this, "User is found!", Toast.LENGTH_LONG).show();
+                Toast.makeText(LoginActivity.this, "Вход совершен успешно!", Toast.LENGTH_LONG).show();
                 Intent intent = new Intent(LoginActivity.this, MainActivity.class);
                 startActivity(intent);
                 finish();
@@ -67,6 +81,14 @@ public class LoginActivity extends AppCompatActivity {
                 Send_data();
             }
         });
+
+        FirebaseUser currentUser = mAuth.getCurrentUser();
+        if (currentUser != null) {
+            // Пользователь уже аутентифицирован, переходим к MainActivity
+            Intent intent = new Intent(LoginActivity.this, MainActivity.class);
+            startActivity(intent);
+            finish();
+        }
     }
 
 
@@ -77,7 +99,7 @@ public class LoginActivity extends AppCompatActivity {
 
         if (phone != null){
             if ((phone.charAt(0) != '+') && (phone.length() != 12)){
-                Toast.makeText(LoginActivity.this, "Invalid phone format", Toast.LENGTH_LONG).show();
+                Toast.makeText(LoginActivity.this, "Неверный формат телефона", Toast.LENGTH_LONG).show();
             }else{
                 Intent i = new Intent(LoginActivity.this, SMS_Conf_Page.class);
 

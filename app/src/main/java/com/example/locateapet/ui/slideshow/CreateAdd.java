@@ -73,6 +73,7 @@ public class CreateAdd extends Fragment {
     EditText header;
     EditText desc;
     EditText species;
+    EditText tags_obj;
 
     //upload uri (pict hard drive adress)
     Uri global_Uri;
@@ -109,6 +110,7 @@ public class CreateAdd extends Fragment {
         picker = binding.picker;
         selected = binding.imageShowcase;
         species_list = binding.spinnerSpecies;
+        tags_obj = binding.tags;
 
         //Google intent for grabbing picture (URI)
         ActivityResultLauncher<PickVisualMediaRequest> pickMedia =
@@ -239,10 +241,12 @@ public class CreateAdd extends Fragment {
         final int[] species_list_index = new int[1];
         final String[] header_str = new String[1];
         final String[] desc_str = new String[1];
+        final String[] tags_str = new String[1];
 
         //getting data
         header_str[0] = header.getText().toString();
         desc_str[0] = desc.getText().toString();
+        tags_str[0] = tags_obj.getText().toString();
 
         picture = selected.getDrawable();
 
@@ -256,17 +260,18 @@ public class CreateAdd extends Fragment {
         storage = FirebaseStorage.getInstance();
         DatabaseReference mRef =  database.getReference().child("Reports").child(reportId).child(String.valueOf(u_counter));
 
-        //checking whether the header grabber is empty
-        if (!header_str[0].equals("")){
+        //checking whether the header and tags grabber is empty
+        if (!(header_str[0].equals("") && tags_str[0].equals(""))){
             mRef.child("header").setValue(header_str[0]);
             mRef.child("species").setValue(species_str[0]);
-
+            mRef.child("tags").setValue(tags_str[0]);
             //setting the desc value to default one (only if it is empty)
             if (!desc_str[0].equals("")) {
                 mRef.child("description").setValue(desc_str[0]);
             }else{
                 mRef.child("description").setValue("[Описание не предоставлено]");
             }
+            //mRef.child("tags").setValue(tags_str);
             StorageReference storageRef = storage.getReference();
             StorageReference mountainsRef = storageRef.child(reportId).child("photo"+ String.valueOf(u_counter) + ".jpg");
 
